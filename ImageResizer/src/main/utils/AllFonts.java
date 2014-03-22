@@ -40,7 +40,6 @@ public class AllFonts {
 			        System.out.println(name);
 			        
 			        resultStrings[x]=name;
-			        //System.out.println(x+" "+resultStrings[f+s]);
 			        x++;
 			      }
 			    

@@ -8,7 +8,7 @@ import org.imgscalr.Scalr.Mode;
 
 public class ImageResize {
 	public static BufferedImage resize(BufferedImage img, int width, int height) {
-		return Scalr.resize(img, Method.QUALITY, Mode.AUTOMATIC, 50, 50,
+		return Scalr.resize(img, Method.QUALITY, Mode.AUTOMATIC, width,height,
 				Scalr.OP_ANTIALIAS);
 	}
 }

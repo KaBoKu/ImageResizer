@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.MenuBar;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -14,9 +15,12 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.text.NumberFormat;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -40,6 +44,7 @@ import main.gui.MarvinTest;
 import main.gui.MarvinWindow;
 import main.gui.MarvinWindowsPerview;
 import main.utils.AllFonts;
+import main.utils.ImageResize;
 import marvin.gui.MarvinImagePanel;
 import marvin.image.MarvinImage;
 import marvin.io.MarvinImageIO;
@@ -64,14 +69,13 @@ public class MainWindow extends JFrame {
 
 	private JLabel widthValueLabel;
 	private JLabel heightValueLabel;
-	
+
 	private JCheckBox boldBox;
 	private JCheckBox italicBox;
 	private JComboBox<String> typeOfWatermarkSpinner;
 	private JComboBox<String> placeOfWatermarkSpinner;
 	private JTextField textField;
 
-	
 	private JButton resizeDo;
 	private JFormattedTextField widthFormattedText;
 	private JFormattedTextField heighFormattedText;
@@ -79,7 +83,7 @@ public class MainWindow extends JFrame {
 	private JLabel widthResizeLabel;
 	private JLabel heightResizeLabel;
 	private JLabel proportionLabel;
-	
+
 	private ButtonGroup radioGroup;
 	private JRadioButton radioButton1;
 	private JRadioButton radioButton2;
@@ -96,12 +100,13 @@ public class MainWindow extends JFrame {
 
 	private Dimension screenSize;
 	private Dimension windowSize;
-	
+
 	private MarvinImage image;
 	private MarvinImage backupImage;
+	private BufferedImage bImage;
 	private MarvinWindow mwMarvinWindow;
 	private MarvinWindowsPerview mwMarvinWindowsPerview;
-	
+
 	public MainWindow() {
 		setLocation();
 		setMenu();
@@ -118,8 +123,8 @@ public class MainWindow extends JFrame {
 		setResize();
 		addElemewntsToFrame();
 		addClosingDialog();
-		//new MarvinWindow("D:\\WatermarkedImage.jpg");
-		//new MarvinWindowsPerview("D:\\WatermarkedImage.jpg");
+		// new MarvinWindow("D:\\WatermarkedImage.jpg");
+		// new MarvinWindowsPerview("D:\\WatermarkedImage.jpg");
 		mwMarvinWindow = new MarvinWindow();
 		mwMarvinWindowsPerview = new MarvinWindowsPerview();
 	}
@@ -172,6 +177,25 @@ public class MainWindow extends JFrame {
 		pervieButton = new JButton("Podgl¹d");
 		buttonsPanel.setPreferredSize(new Dimension(250, 100));
 
+		saveButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String tmpString = file.getAbsolutePath();
+				String[] arrayString = tmpString.split(".[a-zA-Z]+$");
+				// System.out.println(arrayString[0]);
+				BufferedImage im = image.getBufferedImage();
+				try {
+					ImageIO.write(im, "jpg", new File(arrayString[0] + "Edited"
+							+ ".jpg"));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+
 		chooseFileButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -187,20 +211,29 @@ public class MainWindow extends JFrame {
 					System.out.println(file.getName());
 					System.out.println(file.getAbsolutePath());
 					image = MarvinImageIO.loadImage(file.getAbsolutePath());
+					bImage = image.getBufferedImage();
 					heightValueLabel.setText(Integer.toString(image.getHeight()));
 					widthValueLabel.setText(Integer.toString(image.getWidth()));
 					nameOfFileLabel.setText(file.getName());
 					mwMarvinWindow.MakeMarvinWindow(file.getAbsolutePath());
-					
+
 				}
 			}
 		});
 		pervieButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				mwMarvinWindowsPerview.MakeWindowPerview(file.getAbsolutePath());
+				//mwMarvinWindowsPerview.MakeWindowPerview(file.getAbsolutePath());
+				if(heighFormattedText.getText().length()>0 && widthFormattedText.getText().length()>0){
+					int h=(bImage.getHeight()/100)*Integer.parseInt(heighFormattedText.getText());
+					int w=(bImage.getWidth()/100)*Integer.parseInt(widthFormattedText.getText());
+					
+					bImage = ImageResize.resize(bImage,w,h);
+					mwMarvinWindowsPerview.MakeWindowPerview(bImage);
+				}
+				
 			}
 		});
 		c.ipadx = 0;
@@ -235,16 +268,16 @@ public class MainWindow extends JFrame {
 		radioButton3 = new JRadioButton("Efekt 3");
 		radioButton4 = new JRadioButton("Efekt 4");
 		radioButton5 = new JRadioButton("Brak Efektów");
-		
+
 		radioGroup = new ButtonGroup();
 		radioGroup.add(radioButton1);
 		radioGroup.add(radioButton2);
 		radioGroup.add(radioButton3);
 		radioGroup.add(radioButton4);
 		radioGroup.add(radioButton5);
-		
+
 		radioButton5.setSelected(true);
-		
+
 		effectsPanel.add(radioButton1);
 		effectsPanel.add(radioButton2);
 		effectsPanel.add(radioButton3);
@@ -254,115 +287,114 @@ public class MainWindow extends JFrame {
 
 	private void setResize() {
 		resizePanel = new JPanel();
-		//resizePanel.setLayout(new GridLayout(0,2));
+		// resizePanel.setLayout(new GridLayout(0,2));
 		resizePanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		
+
 		resizePanel.setPreferredSize(new Dimension(250, 130));
 		resizePanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Resize"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		heightResizeLabel = new JLabel("Wysokoœæ");
 		widthResizeLabel = new JLabel("Szerokoœæ");
-		
+
 		proportionBox = new JCheckBox("Zachowaj proporcje");
-        NumberFormat percentDisplayFormat = NumberFormat.getIntegerInstance();
-        percentDisplayFormat.setMaximumIntegerDigits(2);
-        percentDisplayFormat.setMinimumFractionDigits(0);
+		NumberFormat percentDisplayFormat = NumberFormat.getIntegerInstance();
+		percentDisplayFormat.setMaximumIntegerDigits(2);
+		percentDisplayFormat.setMinimumFractionDigits(0);
 		heighFormattedText = new JFormattedTextField(percentDisplayFormat);
 		widthFormattedText = new JFormattedTextField(percentDisplayFormat);
-		
-		heighFormattedText.setPreferredSize(new Dimension(100,150));
-		
+
+		heighFormattedText.setPreferredSize(new Dimension(100, 150));
+
 		heighFormattedText.addFocusListener(new FocusListener() {
-			
+
 			@Override
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
-				if(proportionBox.isSelected()){
+				if (proportionBox.isSelected()) {
 					widthFormattedText.setText(heighFormattedText.getText());
 				}
 			}
-			
+
 			@Override
 			public void focusGained(FocusEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
+
 		widthFormattedText.addFocusListener(new FocusListener() {
-			
+
 			@Override
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
-				if(proportionBox.isSelected())heighFormattedText.setText(widthFormattedText.getText());
+				if (proportionBox.isSelected())
+					heighFormattedText.setText(widthFormattedText.getText());
 			}
-			
+
 			@Override
 			public void focusGained(FocusEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
+
 		proportionBox.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				if(proportionBox.isSelected()){
+				if (proportionBox.isSelected()) {
 					widthFormattedText.setText(heighFormattedText.getText());
 				}
 			}
 		});
-		
+
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = c.WEST;
-		resizePanel.add(heightResizeLabel,c);
+		resizePanel.add(heightResizeLabel, c);
 		c.gridx = 1;
 		c.gridy = 0;
 		c.ipadx = 30;
-		resizePanel.add(heighFormattedText,c);
+		resizePanel.add(heighFormattedText, c);
 		c.gridx = 0;
 		c.gridy = 1;
 		c.ipadx = 0;
-		resizePanel.add(widthResizeLabel,c);
+		resizePanel.add(widthResizeLabel, c);
 		c.gridx = 1;
 		c.gridy = 1;
 		c.ipadx = 30;
-		resizePanel.add(widthFormattedText,c);
+		resizePanel.add(widthFormattedText, c);
 		c.gridx = 0;
 		c.gridy = 2;
 		c.ipadx = 0;
-		resizePanel.add(proportionBox,c);
+		resizePanel.add(proportionBox, c);
 		c.gridx = 2;
 		c.gridy = 3;
 		c.ipadx = 0;
-		resizePanel.add(proportionBox,c);
+		resizePanel.add(proportionBox, c);
 	}
 
 	private void setWatermark() {
 		watermarkPanel = new JPanel();
 		watermarkPanel.setPreferredSize(new Dimension(250, 100));
-		//watermarkPanel.setLayout(new GridBagLayout());
+		// watermarkPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		watermarkPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Znak wodny"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		boldBox = new JCheckBox("Pogrubione");
 		italicBox = new JCheckBox("Kursywa");
-		
+
 		typeOfWatermarkSpinner = new JComboBox<>(AllFonts.listOfFamilyFonts());
-		
-		
-		
-		placeOfWatermarkSpinner = new JComboBox<String>(new String[]{"Prawy górny róg","Góra œrodek"
-				,"Lewy góry róg","Œrodek lewo","Œrodek","Œrodek prawo",
-				"Dolny lewy róg","Dó³ œrodek","Prawy dolny róg"});
-		
-		
+
+		placeOfWatermarkSpinner = new JComboBox<String>(new String[] {
+				"Prawy górny róg", "Góra œrodek", "Lewy góry róg",
+				"Œrodek lewo", "Œrodek", "Œrodek prawo", "Dolny lewy róg",
+				"Dó³ œrodek", "Prawy dolny róg" });
+
 		textField = new JTextField();
 
 		watermarkPanel.add(typeOfWatermarkSpinner);

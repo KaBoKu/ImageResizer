@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -48,9 +49,9 @@ public class MarvinWindowsPerview extends JFrame {
 		setLocation(wdwLeft, wdwTop);
 	}
 	
-	public void MakeWindowPerview(String patch){
-		img1 = MarvinImageIO.loadImage(patch);
-		System.out.println(patch);
+	public void MakeWindowPerview(BufferedImage img){
+		img1 = new MarvinImage(img);//.loadImage(patch);
+		//System.out.println(patch);
 		imagePanel.setImage(img1);
 
 		setSize(img1.getWidth(), img1.getHeight());
