@@ -19,6 +19,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
@@ -36,6 +37,7 @@ import javax.swing.JTextField;
 import main.gui.MarvinTest;
 import main.gui.MarvinWindow;
 import main.gui.MarvinWindowsPerview;
+import main.utils.AllFonts;
 import marvin.gui.MarvinImagePanel;
 import marvin.image.MarvinImage;
 import marvin.io.MarvinImageIO;
@@ -60,7 +62,9 @@ public class MainWindow extends JFrame {
 
 	private JLabel widthValueLabel;
 	private JLabel heightValueLabel;
-
+	
+	private JCheckBox boldBox;
+	private JCheckBox italicBox;
 	private JComboBox<String> typeOfWatermarkSpinner;
 	private JComboBox<String> placeOfWatermarkSpinner;
 	private JTextField textField;
@@ -293,12 +297,23 @@ public class MainWindow extends JFrame {
 	private void setWatermark() {
 		watermarkPanel = new JPanel();
 		watermarkPanel.setPreferredSize(new Dimension(250, 100));
+		//watermarkPanel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
 		watermarkPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Znak wodny"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-
-		typeOfWatermarkSpinner = new JComboBox<>();
-		placeOfWatermarkSpinner = new JComboBox<String>();
+		boldBox = new JCheckBox("Pogrubione");
+		italicBox = new JCheckBox("Kursywa");
+		
+		typeOfWatermarkSpinner = new JComboBox<>(AllFonts.listOfFamilyFonts());
+		
+		
+		
+		placeOfWatermarkSpinner = new JComboBox<String>(new String[]{"Prawy górny róg","Góra œrodek"
+				,"Lewy góry róg","Œrodek lewo","Œrodek","Œrodek prawo",
+				"Dolny lewy róg","Dó³ œrodek","Prawy dolny róg"});
+		
+		
 		textField = new JTextField();
 
 		watermarkPanel.add(typeOfWatermarkSpinner);

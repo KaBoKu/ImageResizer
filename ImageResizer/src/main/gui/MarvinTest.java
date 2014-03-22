@@ -1,7 +1,9 @@
 package main.gui;
 
+import java.awt.AlphaComposite;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
 
+import main.utils.AllFonts;
 import marvin.gui.MarvinImagePanel;
 import marvin.image.MarvinImage;
 import marvin.io.MarvinImageIO;
@@ -31,10 +34,11 @@ public class MarvinTest extends JFrame{
         setVisible(true);
 		add(imagePanel);
 		BufferedImage imgBufferedImage = img1.getBufferedImage();
-		g2d.setFont(new Font("Arial", Font.BOLD, 30));
-		String watermark = "\u00a9 JavaXp.com";
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+		g2d.setFont(new Font("Monospaced", Font.PLAIN, 30));
+		String watermark = " dewfew";
 		g2d.drawString(watermark, 0, img1.getHeight()/ 2);
-		setUndecorated(true);
+		//setUndecorated(true);
 		getRootPane().setWindowDecorationStyle(JRootPane.NONE);
 	}
 	public MarvinTest(String patch){
@@ -46,10 +50,26 @@ public class MarvinTest extends JFrame{
 		//setVisible(on);
 	//}
 	
-	//public static void main(String[] args) {
+	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		//new MarvinTest().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-	//}
+		//listUsingGraphicsEnvironment();
+		AllFonts.listOfFamilyFonts();
+	}
 
+	
+	public static void listUsingGraphicsEnvironment ()
+    {
+        GraphicsEnvironment ge= null;
+ 
+        ge=GraphicsEnvironment.getLocalGraphicsEnvironment();
+ 
+        String []fontNames=ge.getAvailableFontFamilyNames();
+ 
+        for (int i = 0; i < fontNames.length; i++) {
+            System.out.println(fontNames[i]);
+        }
+    }
+	
 }
+
