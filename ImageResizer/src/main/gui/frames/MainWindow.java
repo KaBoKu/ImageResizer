@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.MenuBar;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -32,6 +33,7 @@ import javax.swing.JTextField;
 
 import main.gui.MarvinTest;
 import main.gui.MarvinWindow;
+import main.gui.MarvinWindowsPerview;
 import marvin.gui.MarvinImagePanel;
 import marvin.image.MarvinImage;
 import marvin.io.MarvinImageIO;
@@ -74,7 +76,11 @@ public class MainWindow extends JFrame {
 
 	private File file;
 
+	private Dimension screenSize;
+	private Dimension windowSize;
+
 	public MainWindow() {
+		setLocation();
 		setMenu();
 		setTitle("Resize App");
 		setSize(new Dimension(250, 580));
@@ -89,6 +95,8 @@ public class MainWindow extends JFrame {
 		setResize();
 		addElemewntsToFrame();
 		addClosingDialog();
+		new MarvinWindow("D:\\WatermarkedImage.jpg");
+		new MarvinWindowsPerview("D:\\WatermarkedImage.jpg");
 	}
 
 	private void setMenu() {
@@ -154,15 +162,14 @@ public class MainWindow extends JFrame {
 					System.out.println(file.getName());
 					System.out.println(file.getAbsolutePath());
 
-					MarvinImage img1 = MarvinImageIO
-							.loadImage(file.getAbsolutePath());
-					MarvinImagePanel imagePanel = new MarvinImagePanel();
-					imagePanel.setImage(img1);
-					add(imagePanel);
-					MarvinTest p = new MarvinTest();
-					p.setVisible(true);
-					
-					new MarvinWindow(file.getAbsolutePath());
+					/*
+					 * MarvinImage img1 = MarvinImageIO
+					 * .loadImage(file.getAbsolutePath()); MarvinImagePanel
+					 * imagePanel = new MarvinImagePanel();
+					 * imagePanel.setImage(img1); add(imagePanel);
+					 */
+
+					//new MarvinWindow(file.getAbsolutePath()).setVisible(true);
 				}
 			}
 		});
@@ -226,6 +233,17 @@ public class MainWindow extends JFrame {
 		watermarkPanel.add(typeOfWatermarkSpinner);
 		watermarkPanel.add(placeOfWatermarkSpinner);
 		watermarkPanel.add(textField);
+	}
+
+	private void setLocation() {
+		screenSize = new Dimension(Toolkit.getDefaultToolkit().getScreenSize());
+
+		windowSize = new Dimension(getPreferredSize());
+
+		int wdwLeft = 300 + screenSize.width / 2 - windowSize.width / 2;
+		int wdwTop = screenSize.height / 6 - windowSize.height;
+
+		setLocation(wdwLeft, wdwTop);
 	}
 
 	private void addClosingDialog() {

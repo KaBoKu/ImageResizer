@@ -12,11 +12,11 @@ import marvin.gui.MarvinImagePanel;
 import marvin.image.MarvinImage;
 import marvin.io.MarvinImageIO;
 
-public class MarvinWindow extends JFrame {
+public class MarvinWindowsPerview extends JFrame {
 	MarvinImage img1;
 	MarvinImagePanel imagePanel;
 
-	public MarvinWindow(String patch) {
+	public MarvinWindowsPerview(String patch) {
 
 		imagePanel = new MarvinImagePanel();
 		img1 = MarvinImageIO.loadImage(patch);
@@ -26,8 +26,8 @@ public class MarvinWindow extends JFrame {
 		setSize(img1.getWidth(), img1.getHeight());
 		setVisible(true);
 		setResizable(false);
-		setTitle("Obrazek przed edycj¹");
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setTitle("Podgl¹d");
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		add(imagePanel);
 
 		Dimension screenSize = new Dimension(Toolkit.getDefaultToolkit()
