@@ -9,6 +9,8 @@ import java.awt.MenuBar;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -73,18 +75,19 @@ public class MainWindow extends JFrame {
 	private JButton resizeDo;
 	private JFormattedTextField widthFormattedText;
 	private JFormattedTextField heighFormattedText;
-	private JFormattedTextField heightwiedthFormattedText;
+	private JCheckBox proportionBox;
 	private JLabel widthResizeLabel;
 	private JLabel heightResizeLabel;
-	private JLabel heightwidthResizeLabel;
+	private JLabel proportionLabel;
 	
 	private ButtonGroup radioGroup;
 	private JRadioButton radioButton1;
 	private JRadioButton radioButton2;
 	private JRadioButton radioButton3;
 	private JRadioButton radioButton4;
+	private JRadioButton radioButton5;
 
-	// Menu
+	// MenuF
 	private JMenuBar menuBar;
 	private JMenu menu;
 	private JMenuItem menuItem;
@@ -137,7 +140,7 @@ public class MainWindow extends JFrame {
 				BorderFactory.createTitledBorder("Informajce o obrazku"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
-		nameOfFileLabel = new JLabel("Brak");
+		nameOfFileLabel = new JLabel(" ");
 
 		heightLabel = new JLabel("Wysokoœæ");
 		widthLabel = new JLabel("Szerokoœæ");
@@ -231,17 +234,22 @@ public class MainWindow extends JFrame {
 		radioButton2 = new JRadioButton("Efekt 2");
 		radioButton3 = new JRadioButton("Efekt 3");
 		radioButton4 = new JRadioButton("Efekt 4");
+		radioButton5 = new JRadioButton("Brak Efektów");
 		
 		radioGroup = new ButtonGroup();
 		radioGroup.add(radioButton1);
 		radioGroup.add(radioButton2);
 		radioGroup.add(radioButton3);
 		radioGroup.add(radioButton4);
+		radioGroup.add(radioButton5);
+		
+		radioButton5.setSelected(true);
 		
 		effectsPanel.add(radioButton1);
 		effectsPanel.add(radioButton2);
 		effectsPanel.add(radioButton3);
 		effectsPanel.add(radioButton4);
+		effectsPanel.add(radioButton5);
 	}
 
 	private void setResize() {
@@ -256,17 +264,58 @@ public class MainWindow extends JFrame {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		heightResizeLabel = new JLabel("Wysokoœæ");
 		widthResizeLabel = new JLabel("Szerokoœæ");
-		heightwidthResizeLabel = new JLabel("Szerokoœæ/Wysokoœæ");
 		
-		
+		proportionBox = new JCheckBox("Zachowaj proporcje");
         NumberFormat percentDisplayFormat = NumberFormat.getIntegerInstance();
         percentDisplayFormat.setMaximumIntegerDigits(2);
         percentDisplayFormat.setMinimumFractionDigits(0);
 		heighFormattedText = new JFormattedTextField(percentDisplayFormat);
 		widthFormattedText = new JFormattedTextField(percentDisplayFormat);
-		heightwiedthFormattedText = new JFormattedTextField(percentDisplayFormat);
 		
 		heighFormattedText.setPreferredSize(new Dimension(100,150));
+		
+		heighFormattedText.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				// TODO Auto-generated method stub
+				if(proportionBox.isSelected()){
+					widthFormattedText.setText(heighFormattedText.getText());
+				}
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		widthFormattedText.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				// TODO Auto-generated method stub
+				if(proportionBox.isSelected())heighFormattedText.setText(widthFormattedText.getText());
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		proportionBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(proportionBox.isSelected()){
+					widthFormattedText.setText(heighFormattedText.getText());
+				}
+			}
+		});
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -274,7 +323,7 @@ public class MainWindow extends JFrame {
 		resizePanel.add(heightResizeLabel,c);
 		c.gridx = 1;
 		c.gridy = 0;
-		c.ipadx = 50;
+		c.ipadx = 30;
 		resizePanel.add(heighFormattedText,c);
 		c.gridx = 0;
 		c.gridy = 1;
@@ -282,16 +331,16 @@ public class MainWindow extends JFrame {
 		resizePanel.add(widthResizeLabel,c);
 		c.gridx = 1;
 		c.gridy = 1;
-		c.ipadx = 50;
+		c.ipadx = 30;
 		resizePanel.add(widthFormattedText,c);
 		c.gridx = 0;
 		c.gridy = 2;
 		c.ipadx = 0;
-		resizePanel.add(heightwidthResizeLabel,c);
-		c.gridx = 1;
-		c.gridy = 2;
-		c.ipadx = 50;
-		resizePanel.add(heightwiedthFormattedText,c);
+		resizePanel.add(proportionBox,c);
+		c.gridx = 2;
+		c.gridy = 3;
+		c.ipadx = 0;
+		resizePanel.add(proportionBox,c);
 	}
 
 	private void setWatermark() {
