@@ -54,6 +54,7 @@ public class MarvinTest extends JFrame{
 		// TODO Auto-generated method stub
 		//new MarvinTest().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//listUsingGraphicsEnvironment();
+		
 		AllFonts.listOfFamilyFonts();
 	}
 
