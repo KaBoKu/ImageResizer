@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -20,6 +21,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -63,7 +65,16 @@ public class MainWindow extends JFrame {
 	private JComboBox<String> placeOfWatermarkSpinner;
 	private JTextField textField;
 
-	private ButtonGroup radoiGroup;
+	
+	private JButton resizeDo;
+	private JFormattedTextField widthFormattedText;
+	private JFormattedTextField heighFormattedText;
+	private JFormattedTextField heightwiedthFormattedText;
+	private JLabel widthResizeLabel;
+	private JLabel heightResizeLabel;
+	private JLabel heightwidthResizeLabel;
+	
+	private ButtonGroup radioGroup;
 	private JRadioButton radioButton1;
 	private JRadioButton radioButton2;
 	private JRadioButton radioButton3;
@@ -78,7 +89,12 @@ public class MainWindow extends JFrame {
 
 	private Dimension screenSize;
 	private Dimension windowSize;
-
+	
+	private MarvinImage image;
+	private MarvinImage backupImage;
+	private MarvinWindow mwMarvinWindow;
+	private MarvinWindowsPerview mwMarvinWindowsPerview;
+	
 	public MainWindow() {
 		setLocation();
 		setMenu();
@@ -95,8 +111,10 @@ public class MainWindow extends JFrame {
 		setResize();
 		addElemewntsToFrame();
 		addClosingDialog();
-		new MarvinWindow("D:\\WatermarkedImage.jpg");
-		new MarvinWindowsPerview("D:\\WatermarkedImage.jpg");
+		//new MarvinWindow("D:\\WatermarkedImage.jpg");
+		//new MarvinWindowsPerview("D:\\WatermarkedImage.jpg");
+		mwMarvinWindow = new MarvinWindow();
+		mwMarvinWindowsPerview = new MarvinWindowsPerview();
 	}
 
 	private void setMenu() {
@@ -161,19 +179,23 @@ public class MainWindow extends JFrame {
 					file = fc.getSelectedFile();
 					System.out.println(file.getName());
 					System.out.println(file.getAbsolutePath());
-
-					/*
-					 * MarvinImage img1 = MarvinImageIO
-					 * .loadImage(file.getAbsolutePath()); MarvinImagePanel
-					 * imagePanel = new MarvinImagePanel();
-					 * imagePanel.setImage(img1); add(imagePanel);
-					 */
-
-					//new MarvinWindow(file.getAbsolutePath()).setVisible(true);
+					image = MarvinImageIO.loadImage(file.getAbsolutePath());
+					heightValueLabel.setText(Integer.toString(image.getHeight()));
+					widthValueLabel.setText(Integer.toString(image.getWidth()));
+					nameOfFileLabel.setText(file.getName());
+					mwMarvinWindow.MakeMarvinWindow(file.getAbsolutePath());
+					
 				}
 			}
 		});
-
+		pervieButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				mwMarvinWindowsPerview.MakeWindowPerview(file.getAbsolutePath());
+			}
+		});
 		c.ipadx = 0;
 		c.ipady = 0;
 		c.fill = 0;
@@ -205,6 +227,13 @@ public class MainWindow extends JFrame {
 		radioButton2 = new JRadioButton("Efekt 2");
 		radioButton3 = new JRadioButton("Efekt 3");
 		radioButton4 = new JRadioButton("Efekt 4");
+		
+		radioGroup = new ButtonGroup();
+		radioGroup.add(radioButton1);
+		radioGroup.add(radioButton2);
+		radioGroup.add(radioButton3);
+		radioGroup.add(radioButton4);
+		
 		effectsPanel.add(radioButton1);
 		effectsPanel.add(radioButton2);
 		effectsPanel.add(radioButton3);
@@ -213,10 +242,52 @@ public class MainWindow extends JFrame {
 
 	private void setResize() {
 		resizePanel = new JPanel();
-		resizePanel.setPreferredSize(new Dimension(250, 100));
+		//resizePanel.setLayout(new GridLayout(0,2));
+		resizePanel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
+		resizePanel.setPreferredSize(new Dimension(250, 130));
 		resizePanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Resize"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		heightResizeLabel = new JLabel("Wysokoœæ");
+		widthResizeLabel = new JLabel("Szerokoœæ");
+		heightwidthResizeLabel = new JLabel("Szerokoœæ/Wysokoœæ");
+		
+		
+        NumberFormat percentDisplayFormat = NumberFormat.getIntegerInstance();
+        percentDisplayFormat.setMaximumIntegerDigits(2);
+        percentDisplayFormat.setMinimumFractionDigits(0);
+		heighFormattedText = new JFormattedTextField(percentDisplayFormat);
+		widthFormattedText = new JFormattedTextField(percentDisplayFormat);
+		heightwiedthFormattedText = new JFormattedTextField(percentDisplayFormat);
+		
+		heighFormattedText.setPreferredSize(new Dimension(100,150));
+		
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = c.WEST;
+		resizePanel.add(heightResizeLabel,c);
+		c.gridx = 1;
+		c.gridy = 0;
+		c.ipadx = 50;
+		resizePanel.add(heighFormattedText,c);
+		c.gridx = 0;
+		c.gridy = 1;
+		c.ipadx = 0;
+		resizePanel.add(widthResizeLabel,c);
+		c.gridx = 1;
+		c.gridy = 1;
+		c.ipadx = 50;
+		resizePanel.add(widthFormattedText,c);
+		c.gridx = 0;
+		c.gridy = 2;
+		c.ipadx = 0;
+		resizePanel.add(heightwidthResizeLabel,c);
+		c.gridx = 1;
+		c.gridy = 2;
+		c.ipadx = 50;
+		resizePanel.add(heightwiedthFormattedText,c);
 	}
 
 	private void setWatermark() {
