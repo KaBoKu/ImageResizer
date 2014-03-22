@@ -6,15 +6,19 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.MenuBar;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -25,6 +29,12 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+
+import main.gui.MarvinTest;
+import main.gui.MarvinWindow;
+import marvin.gui.MarvinImagePanel;
+import marvin.image.MarvinImage;
+import marvin.io.MarvinImageIO;
 
 public class MainWindow extends JFrame {
 
@@ -62,6 +72,8 @@ public class MainWindow extends JFrame {
 	private JMenu menu;
 	private JMenuItem menuItem;
 
+	private File file;
+
 	public MainWindow() {
 		setMenu();
 		setTitle("Resize App");
@@ -90,7 +102,7 @@ public class MainWindow extends JFrame {
 	private void setImageInfo() {
 		imageInfoPanel = new JPanel();
 		imageInfoPanel.setPreferredSize(new Dimension(250, 100));
-		imageInfoPanel.setLayout(new GridLayout(0,2));
+		imageInfoPanel.setLayout(new GridLayout(0, 2));
 		imageInfoPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Informajce o obrazku"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
@@ -103,7 +115,6 @@ public class MainWindow extends JFrame {
 		heightValueLabel = new JLabel("Brak");
 		widthValueLabel = new JLabel("Brak");
 
-		
 		imageInfoPanel.add(heightLabel);
 		imageInfoPanel.add(heightValueLabel);
 		imageInfoPanel.add(widthLabel);
@@ -115,11 +126,9 @@ public class MainWindow extends JFrame {
 		buttonsPanel = new JPanel();
 		buttonsPanel.setPreferredSize(new Dimension(250, 100));
 		GridBagLayout gBL = new GridBagLayout();
-		//gBL.
-		//buttonsPanel.setBackground(Color.darkGray);
-	    buttonsPanel.setSize(250,100);
-		//gBL.columnWeights = new double [] {2.0,2.0};
+		buttonsPanel.setSize(250, 100);
 		buttonsPanel.setLayout(new GridBagLayout());
+
 		GridBagConstraints c = new GridBagConstraints();
 		buttonsPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Zapis/Podgl¹d/Wybór"),
@@ -129,30 +138,58 @@ public class MainWindow extends JFrame {
 		saveButton = new JButton("Zapisz");
 		pervieButton = new JButton("Podgl¹d");
 		buttonsPanel.setPreferredSize(new Dimension(250, 100));
-		//c.fill = GridBagConstraints.VERTICAL;
+
+		chooseFileButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				ExtensionFileFilter extensionFileFilter = new ExtensionFileFilter(
+						"Pliki", new String[] { "jpg", "bmp", "gif" });
+				JFileChooser fc = new JFileChooser();
+				fc.setFileFilter(extensionFileFilter);
+				int returnValue = fc.showOpenDialog(null);
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					file = fc.getSelectedFile();
+					System.out.println(file.getName());
+					System.out.println(file.getAbsolutePath());
+
+					MarvinImage img1 = MarvinImageIO
+							.loadImage(file.getAbsolutePath());
+					MarvinImagePanel imagePanel = new MarvinImagePanel();
+					imagePanel.setImage(img1);
+					add(imagePanel);
+					MarvinTest p = new MarvinTest();
+					p.setVisible(true);
+					
+					new MarvinWindow(file.getAbsolutePath());
+				}
+			}
+		});
+
 		c.ipadx = 0;
 		c.ipady = 0;
 		c.fill = 0;
 		c.gridwidth = 2;
 		c.gridx = 0;
 		c.gridy = 0;
-		//chooseFileButton.setBounds(10, 10, 10, 10);
+		// chooseFileButton.setBounds(10, 10, 10, 10);
 		c.fill = GridBagConstraints.BOTH;
-		buttonsPanel.add(chooseFileButton,c);
+		buttonsPanel.add(chooseFileButton, c);
 		c.fill = GridBagConstraints.NONE;
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 1;
-		buttonsPanel.add(saveButton,c);
+		buttonsPanel.add(saveButton, c);
 		c.gridx = 1;
 		c.gridy = 1;
-		buttonsPanel.add(pervieButton,c);
-		
+		buttonsPanel.add(pervieButton, c);
+
 	}
 
 	private void setEffects() {
 		effectsPanel = new JPanel();
-		effectsPanel.setLayout(new GridLayout(0,2));
+		effectsPanel.setLayout(new GridLayout(0, 2));
 		effectsPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Wybór efektu"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
@@ -169,7 +206,7 @@ public class MainWindow extends JFrame {
 
 	private void setResize() {
 		resizePanel = new JPanel();
-		resizePanel.setPreferredSize(new Dimension(250,100));
+		resizePanel.setPreferredSize(new Dimension(250, 100));
 		resizePanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Resize"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
@@ -226,10 +263,10 @@ public class MainWindow extends JFrame {
 				options[0] = new String("Tak");
 				options[1] = new String("Nie");
 
-				int option = JOptionPane.showOptionDialog(getContentPane(), "Czy chcesz wyjœæ",
-						"Koniec dzia³ania", 0, JOptionPane.INFORMATION_MESSAGE, null,
-						options, null);
-				System.out.println("Options "+option);
+				int option = JOptionPane.showOptionDialog(getContentPane(),
+						"Czy chcesz wyjœæ", "Koniec dzia³ania", 0,
+						JOptionPane.INFORMATION_MESSAGE, null, options, null);
+				System.out.println("Options " + option);
 				if (option == JOptionPane.YES_OPTION) {
 					System.exit(0);
 				} else if (option == JOptionPane.NO_OPTION) {
