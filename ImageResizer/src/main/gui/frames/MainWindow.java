@@ -84,6 +84,7 @@ public class MainWindow extends JFrame {
 	private JComboBox<String> typeOfWatermarkSpinner;
 	private JComboBox<String> placeOfWatermarkSpinner;
 	private JTextField textField;
+	private JToggleButton watermarkDo;
 
 	private JCheckBox resizeDo;
 	private JFormattedTextField widthFormattedText;
@@ -161,25 +162,25 @@ public class MainWindow extends JFrame {
 
 		heightValueLabel = new JLabel("Brak");
 		widthValueLabel = new JLabel("Brak");
-	
+
 		GridBagConstraints c = new GridBagConstraints();
-		
+
 		c.gridx = 0;
 		c.gridy = 0;
-		imageInfoPanel.add(heightLabel,c);
+		imageInfoPanel.add(heightLabel, c);
 		c.gridx = 1;
-		c.gridy = 0;		
-		imageInfoPanel.add(heightValueLabel,c);
+		c.gridy = 0;
+		imageInfoPanel.add(heightValueLabel, c);
 		c.gridx = 0;
 		c.gridy = 1;
-		imageInfoPanel.add(widthLabel,c);
+		imageInfoPanel.add(widthLabel, c);
 		c.gridx = 1;
 		c.gridy = 1;
-		imageInfoPanel.add(widthValueLabel,c);
+		imageInfoPanel.add(widthValueLabel, c);
 		c.gridx = 0;
 		c.gridy = 2;
 		c.gridwidth = 2;
-		imageInfoPanel.add(nameOfFileLabel,c);
+		imageInfoPanel.add(nameOfFileLabel, c);
 	}
 
 	private void setButtons() {
@@ -252,22 +253,28 @@ public class MainWindow extends JFrame {
 				// mwMarvinWindowsPerview.MakeWindowPerview(file.getAbsolutePath());
 				bImage = DeepCopyBI.deepCopy(backupImage.getBufferedImage());
 				System.out.println(bImage.equals(backupImage.getBufferedImage()));
-				//mwMarvinWindowsPerview.MakeWindowPerview(sImage);
-				if (heighFormattedText.getText().length() > 0
-						&& widthFormattedText.getText().length() > 0) {
-					int h = (bImage.getHeight() / 100)
-							* Integer.parseInt(heighFormattedText.getText());
-					int w = (bImage.getWidth() / 100)
-							* Integer.parseInt(widthFormattedText.getText());
-
-					bImage = ImageResize.resize(bImage, w, h);
+				// mwMarvinWindowsPerview.MakeWindowPerview(sImage);
+				if(watermarkDo.isSelected()){
+					
 				}
 				
-				if (radioButton5.isSelected())System.out.println("5");
-					
+				if (resizeDo1.isSelected()) {
+					if (heighFormattedText.getText().length() > 0
+							&& widthFormattedText.getText().length() > 0) {
+						int h = (bImage.getHeight() / 100)
+								* Integer.parseInt(heighFormattedText.getText());
+						int w = (bImage.getWidth() / 100)
+								* Integer.parseInt(widthFormattedText.getText());
+
+						bImage = ImageResize.resize(bImage, w, h);
+					}
+				}
+				if (radioButton5.isSelected())
+					;
 				else {
 					if (radioButton1.isSelected()) {
-						MarvinImagePlugin imagePlugin = MarvinPluginLoader.loadImagePlugin("org.marvinproject.image.color.grayScale.jar");
+						MarvinImagePlugin imagePlugin = MarvinPluginLoader
+								.loadImagePlugin("org.marvinproject.image.color.grayScale.jar");
 						MarvinImage imgTmp = new MarvinImage(bImage);
 						imagePlugin.process(imgTmp, imgTmp);
 						imgTmp.update();
@@ -275,7 +282,8 @@ public class MainWindow extends JFrame {
 					}
 					if (radioButton2.isSelected()) {
 
-						MarvinImagePlugin imagePlugin = MarvinPluginLoader.loadImagePlugin("org.marvinproject.image.color.blackAndWhite.jar");
+						MarvinImagePlugin imagePlugin = MarvinPluginLoader
+								.loadImagePlugin("org.marvinproject.image.color.blackAndWhite.jar");
 						MarvinImage imgTmp = new MarvinImage(bImage);
 						imagePlugin.process(imgTmp, imgTmp);
 						imgTmp.update();
@@ -283,7 +291,8 @@ public class MainWindow extends JFrame {
 					}
 					if (radioButton3.isSelected()) {
 
-						MarvinImagePlugin imagePlugin = MarvinPluginLoader.loadImagePlugin("org.marvinproject.image.blur.gaussianBlur.jar");
+						MarvinImagePlugin imagePlugin = MarvinPluginLoader
+								.loadImagePlugin("org.marvinproject.image.blur.gaussianBlur.jar");
 						MarvinImage imgTmp = new MarvinImage(bImage);
 						imagePlugin.process(imgTmp, imgTmp);
 						imgTmp.update();
@@ -291,7 +300,8 @@ public class MainWindow extends JFrame {
 					}
 					if (radioButton4.isSelected()) {
 
-						MarvinImagePlugin imagePlugin = MarvinPluginLoader.loadImagePlugin("org.marvinproject.image.color.sepia.jar");
+						MarvinImagePlugin imagePlugin = MarvinPluginLoader
+								.loadImagePlugin("org.marvinproject.image.color.sepia.jar");
 						MarvinImage imgTmp = new MarvinImage(bImage);
 						imagePlugin.process(imgTmp, imgTmp);
 						imgTmp.update();
@@ -353,7 +363,7 @@ public class MainWindow extends JFrame {
 
 	private void setResize() {
 		resizePanel = new JPanel();
-		
+
 		resizePanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -363,7 +373,9 @@ public class MainWindow extends JFrame {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		heightResizeLabel = new JLabel("Wysokoœæ");
 		widthResizeLabel = new JLabel("Szerokoœæ");
+
 		resizeDo = new JCheckBox("Resize");
+		resizeDo1 = new JToggleButton("Resize");
 		proportionBox = new JCheckBox("Zachowaj proporcje");
 		NumberFormat percentDisplayFormat = NumberFormat.getIntegerInstance();
 		percentDisplayFormat.setMaximumIntegerDigits(2);
@@ -416,7 +428,7 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
-		
+		c.fill = c.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = c.WEST;
@@ -424,28 +436,29 @@ public class MainWindow extends JFrame {
 		c.gridx = 1;
 		c.gridy = 0;
 		c.ipadx = 40;
-		c.insets = new Insets(0,10,0,0);
+		c.insets = new Insets(0, 10, 0, 0);
 		resizePanel.add(heighFormattedText, c);
 		c.gridx = 0;
 		c.gridy = 1;
 		c.ipadx = 0;
-		c.insets = new Insets(0,0,0,0);
+		c.insets = new Insets(0, 0, 0, 0);
 		resizePanel.add(widthResizeLabel, c);
 		c.gridx = 1;
 		c.gridy = 1;
 		c.ipadx = 40;
-		c.insets = new Insets(0,10,0,0);
+		c.insets = new Insets(0, 10, 0, 0);
 		resizePanel.add(widthFormattedText, c);
 		c.gridx = 0;
 		c.gridy = 2;
 		c.ipadx = 0;
 		c.gridwidth = 2;
-		c.insets = new Insets(0,0,0,0);
+		c.insets = new Insets(0, 0, 0, 0);
 		resizePanel.add(proportionBox, c);
 		c.gridx = 0;
 		c.gridy = 3;
 		c.ipadx = 0;
-		resizePanel.add(resizeDo, c);
+		c.gridwidth = 2;
+		resizePanel.add(resizeDo1, c);
 	}
 
 	private void setWatermark() {
@@ -467,9 +480,12 @@ public class MainWindow extends JFrame {
 				"Œrodek lewo", "Œrodek", "Œrodek prawo", "Dolny lewy róg",
 				"Dó³ œrodek", "Prawy dolny róg" });
 
+		watermarkDo = new JToggleButton("Znak wodny");
+
 		textField = new JTextField(10);
 		textField.setDocument(new JTextFieldLimit(10));
 		textField.setPreferredSize(new Dimension(180, 30));
+		c.fill = c.HORIZONTAL;
 		c.anchor = c.WEST;
 		c.gridx = 0;
 		c.gridy = 0;
@@ -481,7 +497,14 @@ public class MainWindow extends JFrame {
 		c.gridx = 0;
 		c.gridy = 2;
 		c.weightx = 1;
+		c.ipadx = 180;
 		watermarkPanel.add(textField, c);
+
+		c.fill = c.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 3;
+		c.weightx = 1;
+		watermarkPanel.add(watermarkDo, c);
 	}
 
 	private void setLocation() {
