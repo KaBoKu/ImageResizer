@@ -44,10 +44,14 @@ import main.gui.MarvinTest;
 import main.gui.MarvinWindow;
 import main.gui.MarvinWindowsPerview;
 import main.utils.AllFonts;
+import main.utils.DeepCopyBI;
 import main.utils.ImageResize;
 import marvin.gui.MarvinImagePanel;
 import marvin.image.MarvinImage;
+import marvin.image.MarvinImageMask;
 import marvin.io.MarvinImageIO;
+import marvin.plugin.MarvinImagePlugin;
+import marvin.util.MarvinPluginLoader;
 
 public class MainWindow extends JFrame {
 
@@ -104,6 +108,7 @@ public class MainWindow extends JFrame {
 	private MarvinImage image;
 	private MarvinImage backupImage;
 	private BufferedImage bImage;
+	private BufferedImage sImage;
 	private MarvinWindow mwMarvinWindow;
 	private MarvinWindowsPerview mwMarvinWindowsPerview;
 
@@ -111,7 +116,7 @@ public class MainWindow extends JFrame {
 		setLocation();
 		setMenu();
 		setTitle("Resize App");
-		setSize(new Dimension(250, 580));
+		setSize(new Dimension(250, 680));
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -211,7 +216,9 @@ public class MainWindow extends JFrame {
 					System.out.println(file.getName());
 					System.out.println(file.getAbsolutePath());
 					image = MarvinImageIO.loadImage(file.getAbsolutePath());
+					backupImage = image.clone();
 					bImage = image.getBufferedImage();
+					sImage = image.getBufferedImage();
 					heightValueLabel.setText(Integer.toString(image.getHeight()));
 					widthValueLabel.setText(Integer.toString(image.getWidth()));
 					nameOfFileLabel.setText(file.getName());
@@ -225,15 +232,57 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				//mwMarvinWindowsPerview.MakeWindowPerview(file.getAbsolutePath());
-				if(heighFormattedText.getText().length()>0 && widthFormattedText.getText().length()>0){
-					int h=(bImage.getHeight()/100)*Integer.parseInt(heighFormattedText.getText());
-					int w=(bImage.getWidth()/100)*Integer.parseInt(widthFormattedText.getText());
-					
-					bImage = ImageResize.resize(bImage,w,h);
-					mwMarvinWindowsPerview.MakeWindowPerview(bImage);
+				// mwMarvinWindowsPerview.MakeWindowPerview(file.getAbsolutePath());
+				bImage = DeepCopyBI.deepCopy(backupImage.getBufferedImage());
+				System.out.println(bImage.equals(backupImage.getBufferedImage()));
+				//mwMarvinWindowsPerview.MakeWindowPerview(sImage);
+				if (heighFormattedText.getText().length() > 0
+						&& widthFormattedText.getText().length() > 0) {
+					int h = (bImage.getHeight() / 100)
+							* Integer.parseInt(heighFormattedText.getText());
+					int w = (bImage.getWidth() / 100)
+							* Integer.parseInt(widthFormattedText.getText());
+
+					bImage = ImageResize.resize(bImage, w, h);
 				}
 				
+				if (radioButton5.isSelected())System.out.println("5");
+					
+				else {
+					if (radioButton1.isSelected()) {
+						MarvinImagePlugin imagePlugin = MarvinPluginLoader.loadImagePlugin("org.marvinproject.image.color.grayScale.jar");
+						MarvinImage imgTmp = new MarvinImage(bImage);
+						imagePlugin.process(imgTmp, imgTmp);
+						imgTmp.update();
+						bImage = imgTmp.getBufferedImage();
+					}
+					if (radioButton2.isSelected()) {
+
+						MarvinImagePlugin imagePlugin = MarvinPluginLoader.loadImagePlugin("org.marvinproject.image.color.blackAndWhite.jar");
+						MarvinImage imgTmp = new MarvinImage(bImage);
+						imagePlugin.process(imgTmp, imgTmp);
+						imgTmp.update();
+						bImage = imgTmp.getBufferedImage();
+					}
+					if (radioButton3.isSelected()) {
+
+						MarvinImagePlugin imagePlugin = MarvinPluginLoader.loadImagePlugin("org.marvinproject.image.blur.gaussianBlur.jar");
+						MarvinImage imgTmp = new MarvinImage(bImage);
+						imagePlugin.process(imgTmp, imgTmp);
+						imgTmp.update();
+						bImage = imgTmp.getBufferedImage();
+					}
+					if (radioButton4.isSelected()) {
+
+						MarvinImagePlugin imagePlugin = MarvinPluginLoader.loadImagePlugin("org.marvinproject.image.color.sepia.jar");
+						MarvinImage imgTmp = new MarvinImage(bImage);
+						imagePlugin.process(imgTmp, imgTmp);
+						imgTmp.update();
+						bImage = imgTmp.getBufferedImage();
+					}
+				}
+
+				mwMarvinWindowsPerview.MakeWindowPerview(bImage);
 			}
 		});
 		c.ipadx = 0;
@@ -379,9 +428,10 @@ public class MainWindow extends JFrame {
 
 	private void setWatermark() {
 		watermarkPanel = new JPanel();
-		watermarkPanel.setPreferredSize(new Dimension(250, 100));
-		// watermarkPanel.setLayout(new GridBagLayout());
+		watermarkPanel.setPreferredSize(new Dimension(250, 125));
+		watermarkPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
+
 		watermarkPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Znak wodny"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
@@ -396,10 +446,19 @@ public class MainWindow extends JFrame {
 				"Dó³ œrodek", "Prawy dolny róg" });
 
 		textField = new JTextField();
+		textField.setPreferredSize(new Dimension(180, 30));
+		c.anchor = c.WEST;
+		c.gridx = 0;
+		c.gridy = 0;
+		watermarkPanel.add(typeOfWatermarkSpinner, c);
+		c.gridx = 0;
+		c.gridy = 1;
+		watermarkPanel.add(placeOfWatermarkSpinner, c);
 
-		watermarkPanel.add(typeOfWatermarkSpinner);
-		watermarkPanel.add(placeOfWatermarkSpinner);
-		watermarkPanel.add(textField);
+		c.gridx = 0;
+		c.gridy = 2;
+		c.weightx = 1;
+		watermarkPanel.add(textField, c);
 	}
 
 	private void setLocation() {

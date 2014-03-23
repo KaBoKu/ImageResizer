@@ -8,10 +8,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
 
 import main.utils.AllFonts;
+import main.utils.ImageResize;
 import marvin.gui.MarvinImagePanel;
 import marvin.image.MarvinImage;
 import marvin.io.MarvinImageIO;
@@ -50,11 +52,15 @@ public class MarvinTest extends JFrame{
 		//setVisible(on);
 	//}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		//new MarvinTest().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//listUsingGraphicsEnvironment();
-		
+		File f = new File("D:\\WatermarkedImage.jpg");
+		BufferedImage img = ImageIO.read(f);
+		BufferedImage img2 = ImageResize.resize(img, 350, 350);
+		File file = new File("D:\\dupa.jpg");
+		ImageIO.write(img2,"jpg", file);
 		AllFonts.listOfFamilyFonts();
 	}
 
