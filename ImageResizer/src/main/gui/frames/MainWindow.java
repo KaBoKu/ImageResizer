@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.MenuBar;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -24,9 +25,11 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -39,6 +42,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 
 import main.gui.MarvinTest;
 import main.gui.MarvinWindow;
@@ -46,6 +50,7 @@ import main.gui.MarvinWindowsPerview;
 import main.utils.AllFonts;
 import main.utils.DeepCopyBI;
 import main.utils.ImageResize;
+import main.utils.JTextFieldLimit;
 import marvin.gui.MarvinImagePanel;
 import marvin.image.MarvinImage;
 import marvin.image.MarvinImageMask;
@@ -80,14 +85,13 @@ public class MainWindow extends JFrame {
 	private JComboBox<String> placeOfWatermarkSpinner;
 	private JTextField textField;
 
-	private JButton resizeDo;
+	private JCheckBox resizeDo;
 	private JFormattedTextField widthFormattedText;
 	private JFormattedTextField heighFormattedText;
 	private JCheckBox proportionBox;
 	private JLabel widthResizeLabel;
 	private JLabel heightResizeLabel;
-	private JLabel proportionLabel;
-
+	private JToggleButton resizeDo1;
 	private ButtonGroup radioGroup;
 	private JRadioButton radioButton1;
 	private JRadioButton radioButton2;
@@ -145,7 +149,7 @@ public class MainWindow extends JFrame {
 	private void setImageInfo() {
 		imageInfoPanel = new JPanel();
 		imageInfoPanel.setPreferredSize(new Dimension(250, 100));
-		imageInfoPanel.setLayout(new GridLayout(0, 2));
+		imageInfoPanel.setLayout(new GridBagLayout());
 		imageInfoPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Informajce o obrazku"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
@@ -157,12 +161,25 @@ public class MainWindow extends JFrame {
 
 		heightValueLabel = new JLabel("Brak");
 		widthValueLabel = new JLabel("Brak");
-
-		imageInfoPanel.add(heightLabel);
-		imageInfoPanel.add(heightValueLabel);
-		imageInfoPanel.add(widthLabel);
-		imageInfoPanel.add(widthValueLabel);
-		imageInfoPanel.add(nameOfFileLabel);
+	
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.gridx = 0;
+		c.gridy = 0;
+		imageInfoPanel.add(heightLabel,c);
+		c.gridx = 1;
+		c.gridy = 0;		
+		imageInfoPanel.add(heightValueLabel,c);
+		c.gridx = 0;
+		c.gridy = 1;
+		imageInfoPanel.add(widthLabel,c);
+		c.gridx = 1;
+		c.gridy = 1;
+		imageInfoPanel.add(widthValueLabel,c);
+		c.gridx = 0;
+		c.gridy = 2;
+		c.gridwidth = 2;
+		imageInfoPanel.add(nameOfFileLabel,c);
 	}
 
 	private void setButtons() {
@@ -336,7 +353,7 @@ public class MainWindow extends JFrame {
 
 	private void setResize() {
 		resizePanel = new JPanel();
-		// resizePanel.setLayout(new GridLayout(0,2));
+		
 		resizePanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -346,7 +363,7 @@ public class MainWindow extends JFrame {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		heightResizeLabel = new JLabel("Wysokoœæ");
 		widthResizeLabel = new JLabel("Szerokoœæ");
-
+		resizeDo = new JCheckBox("Resize");
 		proportionBox = new JCheckBox("Zachowaj proporcje");
 		NumberFormat percentDisplayFormat = NumberFormat.getIntegerInstance();
 		percentDisplayFormat.setMaximumIntegerDigits(2);
@@ -399,31 +416,36 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
-
+		
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = c.WEST;
 		resizePanel.add(heightResizeLabel, c);
 		c.gridx = 1;
 		c.gridy = 0;
-		c.ipadx = 30;
+		c.ipadx = 40;
+		c.insets = new Insets(0,10,0,0);
 		resizePanel.add(heighFormattedText, c);
 		c.gridx = 0;
 		c.gridy = 1;
 		c.ipadx = 0;
+		c.insets = new Insets(0,0,0,0);
 		resizePanel.add(widthResizeLabel, c);
 		c.gridx = 1;
 		c.gridy = 1;
-		c.ipadx = 30;
+		c.ipadx = 40;
+		c.insets = new Insets(0,10,0,0);
 		resizePanel.add(widthFormattedText, c);
 		c.gridx = 0;
 		c.gridy = 2;
 		c.ipadx = 0;
+		c.gridwidth = 2;
+		c.insets = new Insets(0,0,0,0);
 		resizePanel.add(proportionBox, c);
-		c.gridx = 2;
+		c.gridx = 0;
 		c.gridy = 3;
 		c.ipadx = 0;
-		resizePanel.add(proportionBox, c);
+		resizePanel.add(resizeDo, c);
 	}
 
 	private void setWatermark() {
@@ -445,7 +467,8 @@ public class MainWindow extends JFrame {
 				"Œrodek lewo", "Œrodek", "Œrodek prawo", "Dolny lewy róg",
 				"Dó³ œrodek", "Prawy dolny róg" });
 
-		textField = new JTextField();
+		textField = new JTextField(10);
+		textField.setDocument(new JTextFieldLimit(10));
 		textField.setPreferredSize(new Dimension(180, 30));
 		c.anchor = c.WEST;
 		c.gridx = 0;
