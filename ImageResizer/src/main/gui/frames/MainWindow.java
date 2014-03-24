@@ -51,6 +51,7 @@ import main.utils.AllFonts;
 import main.utils.DeepCopyBI;
 import main.utils.ImageResize;
 import main.utils.JTextFieldLimit;
+import main.utils.WaterMarkImage;
 import marvin.gui.MarvinImagePanel;
 import marvin.image.MarvinImage;
 import marvin.image.MarvinImageMask;
@@ -70,7 +71,7 @@ public class MainWindow extends JFrame {
 	// Elements
 	private JButton chooseFileButton;
 	private JButton saveButton;
-	private JButton pervieButton;
+	private JButton previewButton;
 
 	private JLabel nameOfFileLabel;
 	private JLabel widthLabel;
@@ -83,8 +84,22 @@ public class MainWindow extends JFrame {
 	private JCheckBox italicBox;
 	private JComboBox<String> typeOfWatermarkSpinner;
 	private JComboBox<String> placeOfWatermarkSpinner;
+	private JComboBox<String> colorsForComboBox;
 	private JTextField textField;
 	private JToggleButton watermarkDo;
+
+	private JRadioButton verySmallWaterMarkButton;
+	private JRadioButton smallWaterMarkButton;
+	private JRadioButton mediumWaterMarkButton;
+	private JRadioButton bigWaterMarkButton;
+	private JRadioButton veryBigWaterMarkButton;
+	private ButtonGroup sizeButtonGroup;
+
+	private JRadioButton noOpaButton;
+	private JRadioButton midOpaButton;
+	private JRadioButton bigOpaButton;
+	private JRadioButton maxOpaButton;
+	private ButtonGroup opaButtonGroup;
 
 	private JCheckBox resizeDo;
 	private JFormattedTextField widthFormattedText;
@@ -117,6 +132,8 @@ public class MainWindow extends JFrame {
 	private MarvinWindow mwMarvinWindow;
 	private MarvinWindowsPerview mwMarvinWindowsPerview;
 
+	private boolean previewDone;
+
 	public MainWindow() {
 		setLocation();
 		setMenu();
@@ -133,8 +150,7 @@ public class MainWindow extends JFrame {
 		setResize();
 		addElemewntsToFrame();
 		addClosingDialog();
-		// new MarvinWindow("D:\\WatermarkedImage.jpg");
-		// new MarvinWindowsPerview("D:\\WatermarkedImage.jpg");
+		previewDone = false;
 		mwMarvinWindow = new MarvinWindow();
 		mwMarvinWindowsPerview = new MarvinWindowsPerview();
 	}
@@ -149,7 +165,7 @@ public class MainWindow extends JFrame {
 
 	private void setImageInfo() {
 		imageInfoPanel = new JPanel();
-		imageInfoPanel.setPreferredSize(new Dimension(250, 100));
+		imageInfoPanel.setPreferredSize(new Dimension(250, 70));
 		imageInfoPanel.setLayout(new GridBagLayout());
 		imageInfoPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Informajce o obrazku"),
@@ -197,7 +213,7 @@ public class MainWindow extends JFrame {
 
 		chooseFileButton = new JButton("Wybierz plik");
 		saveButton = new JButton("Zapisz");
-		pervieButton = new JButton("Podgl¹d");
+		previewButton = new JButton("Podgl¹d");
 		buttonsPanel.setPreferredSize(new Dimension(250, 100));
 
 		saveButton.addActionListener(new ActionListener() {
@@ -205,17 +221,22 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				if (previewDone) {
+					saveMethod();
+				}
+				else {
+					previewMethod();
+					saveMethod();
+				}
+			}
+
+			private void saveMethod() {
 				String tmpString = file.getAbsolutePath();
 				String[] arrayString = tmpString.split(".[a-zA-Z]+$");
 				// System.out.println(arrayString[0]);
-				BufferedImage im = image.getBufferedImage();
-				try {
-					ImageIO.write(im, "jpg", new File(arrayString[0] + "Edited"
-							+ ".jpg"));
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				BufferedImage im = bImage;//.getBufferedImage();
+				MarvinImageIO.saveImage(new MarvinImage(bImage),arrayString[0]
+						+ "Edited" + ".jpg");
 			}
 		});
 
@@ -241,76 +262,19 @@ public class MainWindow extends JFrame {
 					widthValueLabel.setText(Integer.toString(image.getWidth()));
 					nameOfFileLabel.setText(file.getName());
 					mwMarvinWindow.MakeMarvinWindow(file.getAbsolutePath());
-
+					previewDone = false;
 				}
 			}
 		});
-		pervieButton.addActionListener(new ActionListener() {
+		previewButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				// mwMarvinWindowsPerview.MakeWindowPerview(file.getAbsolutePath());
-				bImage = DeepCopyBI.deepCopy(backupImage.getBufferedImage());
-				System.out.println(bImage.equals(backupImage.getBufferedImage()));
-				// mwMarvinWindowsPerview.MakeWindowPerview(sImage);
-				if(watermarkDo.isSelected()){
-					
-				}
-				
-				if (resizeDo1.isSelected()) {
-					if (heighFormattedText.getText().length() > 0
-							&& widthFormattedText.getText().length() > 0) {
-						int h = (bImage.getHeight() / 100)
-								* Integer.parseInt(heighFormattedText.getText());
-						int w = (bImage.getWidth() / 100)
-								* Integer.parseInt(widthFormattedText.getText());
-
-						bImage = ImageResize.resize(bImage, w, h);
-					}
-				}
-				if (radioButton5.isSelected())
-					;
-				else {
-					if (radioButton1.isSelected()) {
-						MarvinImagePlugin imagePlugin = MarvinPluginLoader
-								.loadImagePlugin("org.marvinproject.image.color.grayScale.jar");
-						MarvinImage imgTmp = new MarvinImage(bImage);
-						imagePlugin.process(imgTmp, imgTmp);
-						imgTmp.update();
-						bImage = imgTmp.getBufferedImage();
-					}
-					if (radioButton2.isSelected()) {
-
-						MarvinImagePlugin imagePlugin = MarvinPluginLoader
-								.loadImagePlugin("org.marvinproject.image.color.blackAndWhite.jar");
-						MarvinImage imgTmp = new MarvinImage(bImage);
-						imagePlugin.process(imgTmp, imgTmp);
-						imgTmp.update();
-						bImage = imgTmp.getBufferedImage();
-					}
-					if (radioButton3.isSelected()) {
-
-						MarvinImagePlugin imagePlugin = MarvinPluginLoader
-								.loadImagePlugin("org.marvinproject.image.blur.gaussianBlur.jar");
-						MarvinImage imgTmp = new MarvinImage(bImage);
-						imagePlugin.process(imgTmp, imgTmp);
-						imgTmp.update();
-						bImage = imgTmp.getBufferedImage();
-					}
-					if (radioButton4.isSelected()) {
-
-						MarvinImagePlugin imagePlugin = MarvinPluginLoader
-								.loadImagePlugin("org.marvinproject.image.color.sepia.jar");
-						MarvinImage imgTmp = new MarvinImage(bImage);
-						imagePlugin.process(imgTmp, imgTmp);
-						imgTmp.update();
-						bImage = imgTmp.getBufferedImage();
-					}
-				}
-
-				mwMarvinWindowsPerview.MakeWindowPerview(bImage);
+				previewMethod();
 			}
+
+			
 		});
 		c.ipadx = 0;
 		c.ipady = 0;
@@ -328,7 +292,7 @@ public class MainWindow extends JFrame {
 		buttonsPanel.add(saveButton, c);
 		c.gridx = 1;
 		c.gridy = 1;
-		buttonsPanel.add(pervieButton, c);
+		buttonsPanel.add(previewButton, c);
 
 	}
 
@@ -463,7 +427,9 @@ public class MainWindow extends JFrame {
 
 	private void setWatermark() {
 		watermarkPanel = new JPanel();
-		watermarkPanel.setPreferredSize(new Dimension(250, 125));
+		JPanel sizePanel = new JPanel(new GridLayout(0, 5));
+		JPanel opaPanel = new JPanel(new GridLayout(0, 4));
+		watermarkPanel.setPreferredSize(new Dimension(250, 185));
 		watermarkPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -473,7 +439,45 @@ public class MainWindow extends JFrame {
 		boldBox = new JCheckBox("Pogrubione");
 		italicBox = new JCheckBox("Kursywa");
 
+		verySmallWaterMarkButton = new JRadioButton("Bardzo ma³e");
+		smallWaterMarkButton = new JRadioButton("Ma³e");
+		mediumWaterMarkButton = new JRadioButton("Œrednie");
+		bigWaterMarkButton = new JRadioButton("Du¿e");
+		veryBigWaterMarkButton = new JRadioButton("Bardzo du¿e");
+
+		sizeButtonGroup = new ButtonGroup();
+		sizeButtonGroup.add(verySmallWaterMarkButton);
+		sizeButtonGroup.add(smallWaterMarkButton);
+		sizeButtonGroup.add(mediumWaterMarkButton);
+		sizeButtonGroup.add(bigWaterMarkButton);
+		sizeButtonGroup.add(veryBigWaterMarkButton);
+
+		sizePanel.add(verySmallWaterMarkButton);
+		sizePanel.add(smallWaterMarkButton);
+		sizePanel.add(mediumWaterMarkButton);
+		sizePanel.add(bigWaterMarkButton);
+		sizePanel.add(veryBigWaterMarkButton);
+
+		noOpaButton = new JRadioButton("Bark");
+		midOpaButton = new JRadioButton("Œrednia");
+		bigOpaButton = new JRadioButton("Du¿e");
+		maxOpaButton = new JRadioButton("Najwiêksza");
+
+		opaButtonGroup = new ButtonGroup();
+		opaButtonGroup.add(noOpaButton);
+		opaButtonGroup.add(midOpaButton);
+		opaButtonGroup.add(bigOpaButton);
+		opaButtonGroup.add(maxOpaButton);
+
+		opaPanel.add(noOpaButton);
+		opaPanel.add(midOpaButton);
+		opaPanel.add(bigOpaButton);
+		opaPanel.add(maxOpaButton);
+
 		typeOfWatermarkSpinner = new JComboBox<>(AllFonts.listOfFamilyFonts());
+
+		colorsForComboBox = new JComboBox<String>(new String[] { "Zielony",
+				"Bia³y", "Czerwony", "Czarny", "¯ó³ty" });
 
 		placeOfWatermarkSpinner = new JComboBox<String>(new String[] {
 				"Prawy górny róg", "Góra œrodek", "Lewy góry róg",
@@ -505,6 +509,17 @@ public class MainWindow extends JFrame {
 		c.gridy = 3;
 		c.weightx = 1;
 		watermarkPanel.add(watermarkDo, c);
+		c.gridx = 0;
+		c.gridy = 4;
+		c.weightx = 1;
+		watermarkPanel.add(sizePanel, c);
+		c.gridx = 0;
+		c.gridy = 5;
+		c.weightx = 1;
+		watermarkPanel.add(opaPanel, c);
+		c.gridx = 0;
+		c.gridy = 6;
+		watermarkPanel.add(colorsForComboBox, c);
 	}
 
 	private void setLocation() {
@@ -582,11 +597,106 @@ public class MainWindow extends JFrame {
 
 	private void addElemewntsToFrame() {
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		// setLayout(new GridLayout(2,2));
 		setJMenuBar(menuBar);
 		add(imageInfoPanel);
 		add(effectsPanel);
 		add(resizePanel);
 		add(watermarkPanel);
 		add(buttonsPanel);
+	}
+	private void previewMethod() {
+		bImage = DeepCopyBI.deepCopy(backupImage.getBufferedImage());
+		System.out.println(bImage.equals(backupImage.getBufferedImage()));
+		
+		if (radioButton5.isSelected())
+			;
+		else {
+			if (radioButton1.isSelected()) {
+				MarvinImagePlugin imagePlugin = MarvinPluginLoader
+						.loadImagePlugin("org.marvinproject.image.color.grayScale.jar");
+				MarvinImage imgTmp = new MarvinImage(bImage);
+				imagePlugin.process(imgTmp, imgTmp);
+				imgTmp.update();
+				bImage = imgTmp.getBufferedImage();
+			}
+			if (radioButton2.isSelected()) {
+
+				MarvinImagePlugin imagePlugin = MarvinPluginLoader
+						.loadImagePlugin("org.marvinproject.image.color.blackAndWhite.jar");
+				MarvinImage imgTmp = new MarvinImage(bImage);
+				imagePlugin.process(imgTmp, imgTmp);
+				imgTmp.update();
+				bImage = imgTmp.getBufferedImage();
+			}
+			if (radioButton3.isSelected()) {
+
+				MarvinImagePlugin imagePlugin = MarvinPluginLoader
+						.loadImagePlugin("org.marvinproject.image.blur.gaussianBlur.jar");
+				MarvinImage imgTmp = new MarvinImage(bImage);
+				imagePlugin.process(imgTmp, imgTmp);
+				imgTmp.update();
+				bImage = imgTmp.getBufferedImage();
+			}
+			if (radioButton4.isSelected()) {
+
+				MarvinImagePlugin imagePlugin = MarvinPluginLoader
+						.loadImagePlugin("org.marvinproject.image.color.sepia.jar");
+				MarvinImage imgTmp = new MarvinImage(bImage);
+				imagePlugin.process(imgTmp, imgTmp);
+				imgTmp.update();
+				bImage = imgTmp.getBufferedImage();
+			}
+		}
+		if (watermarkDo.isSelected()) {
+			String tmpValueString = mediumWaterMarkButton.getText();
+			if (verySmallWaterMarkButton.isSelected())
+				tmpValueString = verySmallWaterMarkButton.getText();
+			if (smallWaterMarkButton.isSelected())
+				tmpValueString = smallWaterMarkButton.getText();
+			if (mediumWaterMarkButton.isSelected())
+				tmpValueString = mediumWaterMarkButton.getText();
+			if (bigWaterMarkButton.isSelected())
+				tmpValueString = bigWaterMarkButton.getText();
+			if (veryBigWaterMarkButton.isSelected())
+				tmpValueString = veryBigWaterMarkButton.getText();
+
+			float tmpValue = 1f;
+
+			if (noOpaButton.isSelected())
+				tmpValue = 1f;
+			if (midOpaButton.isSelected())
+				tmpValue = 0.50f;
+			if (bigOpaButton.isSelected())
+				tmpValue = 0.35f;
+			if (maxOpaButton.isSelected())
+				tmpValue = 0.20f;
+
+			String.valueOf(colorsForComboBox.getSelectedItem());
+
+			WaterMarkImage.addWaterMark(bImage, textField.getText(),
+					String.valueOf(typeOfWatermarkSpinner
+							.getSelectedItem()), String
+							.valueOf(placeOfWatermarkSpinner
+									.getSelectedItem()), tmpValue,
+					tmpValueString, String.valueOf(colorsForComboBox
+							.getSelectedItem()));
+		}
+
+		if (resizeDo1.isSelected()) {
+			if (heighFormattedText.getText().length() > 0
+					&& widthFormattedText.getText().length() > 0) {
+				int h = (bImage.getHeight() / 100)
+						* Integer.parseInt(heighFormattedText.getText());
+				int w = (bImage.getWidth() / 100)
+						* Integer.parseInt(widthFormattedText.getText());
+
+				bImage = ImageResize.resize(bImage, w, h);
+			}
+		}
+		
+
+		mwMarvinWindowsPerview.MakeWindowPerview(bImage);
+		previewDone = true;
 	}
 }
