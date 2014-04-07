@@ -138,7 +138,8 @@ public class MainWindow extends JFrame {
 		setLocation();
 		setMenu();
 		setTitle("Resize App");
-		setSize(new Dimension(250, 680));
+		//setSize(new Dimension(250, 680));
+		setSize(new Dimension(1000, 480));
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -596,14 +597,29 @@ public class MainWindow extends JFrame {
 	}
 
 	private void addElemewntsToFrame() {
-		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-		// setLayout(new GridLayout(2,2));
+		//setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		//setLayout(new GridLayout(2,2));
+		setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
 		setJMenuBar(menuBar);
-		add(imageInfoPanel);
-		add(effectsPanel);
-		add(resizePanel);
-		add(watermarkPanel);
-		add(buttonsPanel);
+		c.gridx = 0;
+		c.gridy = 0;
+		add(imageInfoPanel,c);
+		c.gridx = 0;
+		c.gridy = 1;
+		add(effectsPanel,c);
+		c.gridx = 1;
+		c.gridy = 0;
+		add(resizePanel,c);
+		c.gridx = 2;
+		c.gridy = 0;
+		c.gridheight = 2;
+		add(watermarkPanel,c);
+		c.gridheight =1;
+		c.gridx = 1;
+		c.gridy = 1;
+		add(buttonsPanel,c);
 	}
 	private void previewMethod() {
 		bImage = DeepCopyBI.deepCopy(backupImage.getBufferedImage());
