@@ -139,7 +139,7 @@ public class MainWindow extends JFrame {
 		setMenu();
 		setTitle("Resize App");
 		//setSize(new Dimension(250, 680));
-		setSize(new Dimension(1000, 480));
+		setSize(new Dimension(905, 300));
 		setResizable(false);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -166,7 +166,7 @@ public class MainWindow extends JFrame {
 
 	private void setImageInfo() {
 		imageInfoPanel = new JPanel();
-		imageInfoPanel.setPreferredSize(new Dimension(250, 70));
+		imageInfoPanel.setPreferredSize(new Dimension(250, 140));
 		imageInfoPanel.setLayout(new GridBagLayout());
 		imageInfoPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Informajce o obrazku"),
@@ -215,7 +215,7 @@ public class MainWindow extends JFrame {
 		chooseFileButton = new JButton("Wybierz plik");
 		saveButton = new JButton("Zapisz");
 		previewButton = new JButton("Podgl¹d");
-		buttonsPanel.setPreferredSize(new Dimension(250, 100));
+		buttonsPanel.setPreferredSize(new Dimension(250, 105));
 
 		saveButton.addActionListener(new ActionListener() {
 
@@ -300,6 +300,7 @@ public class MainWindow extends JFrame {
 	private void setEffects() {
 		effectsPanel = new JPanel();
 		effectsPanel.setLayout(new GridLayout(0, 2));
+		effectsPanel.setPreferredSize(new Dimension(250, 105));
 		effectsPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Wybór efektu"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
@@ -332,7 +333,7 @@ public class MainWindow extends JFrame {
 		resizePanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
-		resizePanel.setPreferredSize(new Dimension(250, 130));
+		resizePanel.setPreferredSize(new Dimension(250, 140));
 		resizePanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Resize"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
@@ -430,7 +431,7 @@ public class MainWindow extends JFrame {
 		watermarkPanel = new JPanel();
 		JPanel sizePanel = new JPanel(new GridLayout(0, 5));
 		JPanel opaPanel = new JPanel(new GridLayout(0, 4));
-		watermarkPanel.setPreferredSize(new Dimension(250, 185));
+		watermarkPanel.setPreferredSize(new Dimension(390, 245));
 		watermarkPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -639,7 +640,7 @@ public class MainWindow extends JFrame {
 			if (radioButton2.isSelected()) {
 
 				MarvinImagePlugin imagePlugin = MarvinPluginLoader
-						.loadImagePlugin("org.marvinproject.image.color.blackAndWhite.jar");
+						.loadImagePlugin("org.marvinproject.image.artistic.television.jar");
 				MarvinImage imgTmp = new MarvinImage(bImage);
 				imagePlugin.process(imgTmp, imgTmp);
 				imgTmp.update();
